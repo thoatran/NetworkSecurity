@@ -67,8 +67,8 @@ int main(int argc, char *argv[])
     */
     
     rbuff = (unsigned char*)read_inputtext(argv[1]);//Get plaintext
-    const unsigned char* bla = (const unsigned char*)rbuff;
-    long length = strlen((char*)bla);//Get length
+    const unsigned char* in = (const unsigned char*)rbuff;
+    long length = strlen((char*)in);//Get length
     
     printf("File containes %ld bytes\n",length);
 
@@ -84,15 +84,21 @@ int main(int argc, char *argv[])
     */
     gettimeofday(&t_start, 0);
     
-    if((outlen = RSA_public_encrypt(strlen((char*)rbuff), rbuff, wbuff, key, RSA_PKCS1_PADDING)) == -1)
-                {
-                  exit(-1);
-                }
+    if((outlen = RSA_public_encrypt(sizeof((char*)rbuff), rbuff, wbuff, key, RSA_PKCS1_PADDING)) == -1)
+    {
+        printf("Error in encryption!\n");        
+        exit(-1);
+    }
     
     gettimeofday(&t_end, 0);
     elapsed = (t_end.tv_sec-t_start.tv_sec)*1000000 + 
               (t_end.tv_usec - t_start.tv_usec);
     printf("Encryption time: %ld us\n", elapsed);
+
+    printf("RSA Encryption:");
+    for(int i = 0; i < outlen; i++)
+        printf("%x",wbuff[i]);  
+    printf("\n");
  
     /*
       RSA decryption and its processing time.
@@ -107,10 +113,8 @@ int main(int argc, char *argv[])
     }
     
     gettimeofday(&t_end, 0);
-    elapsed = (t_end.tv_sec-t_start.tv_sec)*1000000 +
-              (t_end.tv_usec - t_start.tv_usec);
+    elapsed = (t_end.tv_sec-t_start.tv_sec)*1000000 + (t_end.tv_usec - t_start.tv_usec);
     printf("Decryption time: %ld us\n",elapsed);
-
     RSA_free(key);
 
 

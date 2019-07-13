@@ -58,17 +58,58 @@ int main(int argc, char *argv[])
     /*
       Additional variables
     */
+    int result;
+    struct timeval t_start, t_end;
+    long duration;
 
     /*
       Read text file and print out its length (in bytes)
     */
     
     memset(wbuff,0,sizeof(wbuff));
+    rbuff = (unsigned char*) read_inputtext(argv[1]);
+    unsigned char * tmp = (unsigned char *)rbuff;  
+    long length = strlen((char*)tmp);
+    printf("File copntains %ld bytes\n", length);
 
     /*
       SHA1 encryption and its processing time
       Use Sha1_Init(), Sha1_Update() and Sha1_Final()
     */
+    gettimeofday(&t_start, 0);
+
+    result = SHA1_Init(&c);
+    if(result == 1) {
+        printf("SHA1_Init Success\n");
+    } else {
+        printf("SHA1_Init error\n");
+        return -1;
+    }
+
+    result = SHA1_Update(&c, rbuff, length);
+    if(result == 1) {
+        printf("SHA1_Update success\n");
+    } else {
+        printf("SHA1_Update error\n");
+        return -2;
+    }
    
+    result = SHA1_Final(wbuff, &c);
+    if(result == 1) {
+        printf("SHA1_Final success\n");
+    } else {
+        printf("SHA1_Final error\n");
+        return -3;
+    }
+
+    gettimeofday(&t_end, 0);
+    duration = (t_end.tv_sec-t_start.tv_sec) * 1000000 + (t_end.tv_usec - t_start.tv_usec);
+    printf("Encryption time: %ld us\n",duration);
+    printf("SHA1 = \n");
+    for(int i = 0; i < SHA_DIGEST_LENGTH; i++) {
+        printf("%02x\n", wbuff[i]);
+    }
+    printf("\n");
+    
     return 0;
 }

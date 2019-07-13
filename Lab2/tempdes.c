@@ -72,20 +72,57 @@ int main(int argc, char *argv[])
     /* 
        Addtional variables
     */
+    const unsigned char *inputtext;
+    const unsigned char *outputtext;
+    const unsigned char *decrypttext;
+    struct timeval t_start, t_end;
+    long elapsed;
+    
+    str2DES_cblock(str_iv, &iv);
+    str2DES_cblock(str_key, &cbc_key);
+    
+    if ((k = des_set_key_checked(&cbc_key,key)) != 0) //Generate the actual key from des_key for encyption
+        printf("\nkey error\n");
     
     /* 
        Read text file and print out its length (in bytes)
     */
-
+    inputtext = read_inputtext(argv[1]);//Get plaintext
+    const unsigned char* bla = (const unsigned char*)inputtext;
+    long length = strlen((char*)bla);//Get length
+    
+    printf("File containes %ld bytes\n",length);
     /*
        DES encryption and its processing time
        Use the built-in function des_cbc_encrypt() with ENC mode
     */
-
+    
+    outputtext = malloc(length * sizeof(unsigned char*));//Get size;
+    
+    gettimeofday(&t_start, 0);
+    
+    des_cbc_encrypt( (unsigned char*)inputtext, (unsigned char*)outputtext, length, key, &iv, ENC);
+    
+    gettimeofday(&t_end, 0);
+    elapsed = (t_end.tv_sec-t_start.tv_sec) * 1000000 + (t_end.tv_usec - t_start.tv_usec);
+    printf("Encryption time: %ld us\n",elapsed);
+    
     /*
        DES decryption and its processing time
        Use the built-in function des_cbc_encrypt() with DEC mode
     */
-      
+    decrypttext = malloc(length * sizeof(unsigned char*));//Get size;
+    
+    gettimeofday(&t_start, 0);
+    
+    des_cbc_encrypt( (unsigned char*)outputtext, (unsigned char*)decrypttext,
+                       length, key, &iv, DEC);
+    
+    gettimeofday(&t_end, 0);
+    elapsed = (t_end.tv_sec-t_start.tv_sec)*1000000 +
+              (t_end.tv_usec - t_start.tv_usec);
+    printf("Decryption time: %ld us\n",elapsed);
+    
+//    printf("aaa %s\n",decrypttext);
     return 0;
 }

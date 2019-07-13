@@ -111,7 +111,7 @@ void my_des_cbc_encrypt(unsigned char *input, unsigned char *output, long length
   c2l(iv, xor1);  
  
   //Handling 8 bytes of input data each time inside the for loop.
-  for(l -= 8; l >= 0; l -=8){
+  for(l -= 8; l >= 0; l -= 8){
     /*
       Your implementation of DES in CBC mode.
       Using des_encrypt1().
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
       exit(1);
     }
     if(isxdigit(atoi(argv[1])) != 0) {
-        printf( "not Hexadicimal digits\n" );
+        printf( "not Hexadecimal digits\n" );
         exit(1);
     }
     /*
